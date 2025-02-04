@@ -19,12 +19,12 @@
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 800
-#define NUM_RAYS 300
+#define NUM_RAYS 200
 
 // define ray struct
 typedef struct Rays {
     int x, y;
-    int angle;
+    float angle;
 } Rays;
 
 typedef struct Circle {

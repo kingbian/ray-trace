@@ -64,50 +64,17 @@ void createRays(Circle circle, Rays ray[]) {
     printf("[%d]: rays created\n", i);
 }
 
-// void drawRays(SDL_Renderer* renderer, Circle circle, Circle shadowCircle, Rays rays[]) {
-//     SDL_SetRenderDrawColor(renderer, 247, 234, 10, 0);
-//
-//     bool hitShadowCircle = false;
-//     // Loop through a portion of the circle boundary
-//     double radiusSquare = shadowCircle.radius * shadowCircle.radius;
-//     for (int i = 0; i < NUM_RAYS; ++i) {
-//         int stepX = rays[i].x + 1;
-//         int stepY = rays[i].y + 1;
-//         bool windowBorder = false;
-//
-//         while (!hitShadowCircle || !windowBorder) {
-//             SDL_Rect point = (SDL_Rect){stepX, stepY, 1, 1};
-//             SDL_RenderDrawRect(renderer, &point);
-//
-//             if (stepY == shadowCircle.y - shadowCircle.radius || stepX == shadowCircle.x - shadowCircle.radius) {
-//                 printf("hit the SHADOW CIRCLE\n");
-//                 hitShadowCircle = true;
-//                 break;
-//             }
-//
-//             if (stepX >= rays[i].endX || stepY >= rays[i].endY) {
-//                 printf("Hit the end of line\n");
-//                 break;
-//             }
-//
-//             stepY += 1;
-//             stepX += 1;
-//         }
-//         // SDL_RenderDrawLine(renderer, rays[i].x, rays[i].y, rays[i].endX, rays[i].endY);
-//     }
-// }
-
 bool quadratic(float a, float b, float c, float* x0, float* x1) {
     float discr = b * b - 4 * a * c;
 
     if (discr < 0) {
-        return false;  // unable to take the square of 0
+        return false;  // no roots or solution exists
     } else if (discr == 0) {
         *x0 = *x1 = -b / (2 * a);  // one solution that exists
     } else {
         float square_discr = sqrt(discr);
 
-        float q = (b > 0) ? -0.5 * (b + sqrt(discr)) : -0.5 * (b - sqrt(discr));
+        float q = (b > 0) ? -0.5 * (b + square_discr) : -0.5 * (b - square_discr);
 
         *x0 = q / a;
         *x1 = c / q;
@@ -127,30 +94,29 @@ void drawRays(SDL_Renderer* renderer, Circle circle, Circle shadowCircle, Rays r
 
     for (int i = 0; i < NUM_RAYS; ++i) {
         vec2f rayDirection = {cos(rays[i].angle), sin(rays[i].angle)};
-        printf("current angle: %f\n", rays[i].angle);
         vec2f origin = {rays[i].x, rays[i].y};
-        vec2f L = {origin.x - shadowCircle.x, origin.y - shadowCircle.y};
+        vec2f originToCenter = {origin.x - shadowCircle.x, origin.y - shadowCircle.y};
 
         float A = rayDirection.x * rayDirection.x + rayDirection.y * rayDirection.y;
-        float B = 2 * (rayDirection.x * L.x + rayDirection.y * L.y);
-        float C = L.x * L.x + L.y * L.y - shadowCircle.radius * shadowCircle.radius;
+        float B = 2 * (rayDirection.x * originToCenter.x + rayDirection.y * originToCenter.y);
+        float C = originToCenter.x * originToCenter.x + originToCenter.y * originToCenter.y - shadowCircle.radius * shadowCircle.radius;
 
         float t0, t1;
 
-        if (quadratic(A, B, C, &t0, &t1) && t0 >= 0) {  // when t0 is >= 0, then there's an intersection point
-            printf("we have an intersection point\n");
+        if (quadratic(A, B, C, &t0, &t1) && t0 >= 0) {  // when t0 is >= 0, then there's at least one intersection point or tangent
             // get intersection points
-
             vec2f pHit = {origin.x + rayDirection.x * t0, origin.y + rayDirection.y * t0};
             // draw the line
             SDL_RenderDrawLine(renderer, origin.x, origin.y, pHit.x, pHit.y);
+        } else if (t0 <= 0 && t1 >= 0) {
+            // 2 intersect point exist, meaning the light source is behind the shadow object
+            break;
         } else {  // there was no intersection
 
             int length = SCREEN_HEIGHT * 2;
-            printf("NO intersection point\n");
             float endX = origin.x + rayDirection.x * length;
             float endY = origin.y + rayDirection.y * length;
-
+            // draw whole line segment
             SDL_RenderDrawLine(renderer, origin.x, origin.y, endX, endY);
         }
     }

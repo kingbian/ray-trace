@@ -27,8 +27,9 @@ int main(void) {
 
     Rays ray[NUM_RAYS];
     Circle circle = {200, 200, 40};
-    Circle shadow = {((double)w / 2) + 150, ((double)h / 2) + 150, 150, 0, 2};
-    createRays(circle, ray);
+
+    Circle shadow = {((double)w / 2) + 150, ((double)h / 2) + 150, 150, 0, 1};  // change 1 to increase/decrease speed
+    createRays(&circle, ray);
     bool running = true;
     while (running) {
         SDL_Event event;
@@ -58,16 +59,16 @@ int main(void) {
             }
         }
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+        SDL_SetRenderDrawColor(renderer, 87, 85, 83, 0);
         SDL_RenderClear(renderer);  // clears the background
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         checkBounds(&circle);
-        drawCircle(renderer, circle);
-        // bounce(&shadow);
-        drawCircle(renderer, shadow);
+        drawCircle(renderer, &circle, false);
+        drawCircle(renderer, &shadow, true);
+        bounce(&shadow);
 
-        createRays(circle, ray);
-        drawRays(renderer, circle, shadow, ray);
+        createRays(&circle, ray);
+        drawRays(renderer, &shadow, ray);
         /*         drawRays(renderer, circle, shadow); */
         SDL_RenderPresent(renderer);
     }

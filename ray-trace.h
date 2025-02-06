@@ -40,8 +40,8 @@ typedef struct vec2f {
 } vec2f;
 
 void checkBounds(Circle* circle);
-void drawCircle(SDL_Renderer* renderer, Circle circle);
-void createRays(Circle circle, Rays ray[]);
+void drawCircle(SDL_Renderer* renderer, const Circle* circle, bool shadowCircle);
+void createRays(const Circle* circle, Rays ray[]);
 bool quadratic(float a, float b, float c, float* x0, float* x1);
-void drawRays(SDL_Renderer* renderer, Circle circle, Circle shadowCircle, Rays rays[]);
+void drawRays(SDL_Renderer* renderer, const Circle* shadowCircle, const Rays rays[]);
 void bounce(Circle* circle);

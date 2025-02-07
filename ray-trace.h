@@ -28,10 +28,10 @@ typedef struct Rays {
 } Rays;
 
 typedef struct Circle {
-    double x;
-    double y;
-    double radius;
-    double vx, vy;
+    float x;
+    float y;
+    int radius;
+    float vx, vy;
 } Circle;
 
 // define struct to hold 2D intersection points

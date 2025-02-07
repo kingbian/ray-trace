@@ -26,9 +26,9 @@ int main(void) {
     SDL_GetWindowSize(window, &w, &h);
 
     Rays ray[NUM_RAYS];
-    Circle circle = {200, 200, 40};
+    Circle circle = {740.0f, 100.0f, 40};
 
-    Circle shadow = {((double)w / 2) + 150, ((double)h / 2) + 150, 150, 0, 1};  // change 1 to increase/decrease speed
+    Circle shadow = {250.0f, 150.0f, 150, 0, 0.1f};  // change 1 to increase/decrease speed
     createRays(&circle, ray);
     bool running = true;
     while (running) {
